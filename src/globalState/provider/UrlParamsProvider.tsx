@@ -1,4 +1,4 @@
-import React, { createContext, FC } from 'react';
+import React, { createContext, PropsWithChildren, useMemo } from 'react';
 import {
 	AgencyDataInterface,
 	ConsultantDataInterface,
@@ -13,22 +13,34 @@ export const UrlParamsContext = createContext<{
 	consultant: ConsultantDataInterface | null;
 	topic: TopicsDataInterface | null;
 	loaded: boolean;
+	slugFallback: string;
 }>({
 	agency: null,
 	consultingType: null,
 	consultant: null,
 	topic: null,
-	loaded: false
+	loaded: false,
+	slugFallback: undefined
 });
 
-export const UrlParamsProvider: FC = ({ children }) => {
-	const { agency, consultingType, consultant, topic, loaded } =
+export const UrlParamsProvider = ({ children }: PropsWithChildren<{}>) => {
+	const { agency, consultingType, consultant, topic, loaded, slugFallback } =
 		useUrlParamsLoader();
 
+	const context = useMemo(
+		() => ({
+			agency,
+			consultingType,
+			consultant,
+			topic,
+			loaded,
+			slugFallback
+		}),
+		[agency, consultingType, consultant, topic, loaded, slugFallback]
+	);
+
 	return (
-		<UrlParamsContext.Provider
-			value={{ agency, consultingType, consultant, topic, loaded }}
-		>
+		<UrlParamsContext.Provider value={context}>
 			{children}
 		</UrlParamsContext.Provider>
 	);
