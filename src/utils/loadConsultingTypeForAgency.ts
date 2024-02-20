@@ -1,5 +1,5 @@
 import { apiGetConsultingType } from '../api';
-import { AgencyDataInterface } from '../globalState/interfaces';
+import { AgencyDataInterface } from '../globalState';
 
 export const loadConsultingTypeForAgency = async (
 	agency: AgencyDataInterface

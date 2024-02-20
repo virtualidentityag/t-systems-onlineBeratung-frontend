@@ -52,7 +52,7 @@ export const MainTopicSelection = ({
 				)
 				// Filter topics by preselected agency
 				.filter((t) => !agency || agency.topicIds?.includes(t.id)),
-		[loadedTopics, agency, consultant]
+		[loadedTopics, topic, consultant, agency]
 	);
 
 	useEffect(() => {

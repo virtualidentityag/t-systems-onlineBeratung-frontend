@@ -3,9 +3,8 @@ import unionBy from 'lodash/unionBy';
 
 import {
 	ConsultingTypeInterface,
-	AgencyDataInterface,
-	TopicsDataInterface
-} from '../../../globalState/interfaces';
+	AgencyDataInterface
+} from '../../../globalState';
 import { useAppConfig } from '../../../hooks/useAppConfig';
 import { UrlParamsContext } from '../../../globalState/provider/UrlParamsProvider';
 
@@ -53,7 +52,7 @@ export const useConsultantRegistrationData = () => {
 					)
 			)
 		],
-		[agencies]
+		[agencies, consultant, preselectedAgency, preselectedTopic]
 	);
 
 	useEffect(() => {

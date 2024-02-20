@@ -31,7 +31,6 @@ export const useAgenciesForRegistration = ({
 	const {
 		consultant,
 		agency: preselectedAgency,
-		topic: preselectedTopic,
 		consultingType: preselectedConsultingType,
 		slugFallback
 	} = useContext(UrlParamsContext);

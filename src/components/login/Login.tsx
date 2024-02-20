@@ -64,7 +64,6 @@ import { budibaseLogout } from '../budibase/budibaseLogout';
 import { GlobalComponentContext } from '../../globalState/provider/GlobalComponentContext';
 import { useConsultantRegistrationData } from '../../containers/registration/hooks/useConsultantRegistrationData';
 import { UrlParamsContext } from '../../globalState/provider/UrlParamsProvider';
-import { TopicsDataInterface } from '../../globalState/interfaces/TopicsDataInterface';
 
 const regexAccountDeletedError = /account disabled/i;
 
@@ -139,7 +138,6 @@ export const Login = () => {
 	}, [featureToolsEnabled, gcid]);
 
 	const [agency, setAgency] = useState<AgencyDataInterface>(null);
-	const [topic, setTopic] = useState<TopicsDataInterface>(null);
 	const [validity, setValidity] = useState(VALIDITY_INITIAL);
 	const [registerOverlayActive, setRegisterOverlayActive] = useState(false);
 	const [pwResetOverlayActive, setPwResetOverlayActive] = useState(false);
@@ -314,7 +312,12 @@ export const Login = () => {
 			setAgency(possibleAgencies[0]);
 			setValidity(VALIDITY_VALID);
 		}
-	}, [possibleAgencies, possibleConsultingTypes, topicsAreRequired]);
+	}, [
+		possibleAgencies,
+		possibleConsultingTypes,
+		possibleTopicIds.length,
+		topicsAreRequired
+	]);
 
 	useEffect(() => {
 		deleteCookieByName('tenantId');
@@ -364,15 +367,16 @@ export const Login = () => {
 				}
 			}),
 		[
+			reloadUserData,
 			locale,
 			initLocale,
 			consultant,
 			possibleAgencies,
 			possibleConsultingTypes.length,
-			reloadUserData,
-			handleRegistration,
+			topicsAreRequired,
+			possibleTopicIds,
 			gcid,
-			topicsAreRequired
+			handleRegistration
 		]
 	);
 

@@ -17,7 +17,6 @@ import {
 import { Text } from '../text/Text';
 import { AgencyLanguages } from '../agencySelection/AgencyLanguages';
 import { useTranslation } from 'react-i18next';
-import { useAppConfig } from '../../hooks/useAppConfig';
 import { useConsultantRegistrationData } from '../../containers/registration/hooks/useConsultantRegistrationData';
 import { apiGetTopicsData } from '../../api/apiGetTopicsData';
 import { useTenant } from '../../globalState';
@@ -37,13 +36,9 @@ export const ConsultingTypeAgencySelection = ({
 	onKeyDown
 }: ConsultingTypeAgencySelectionProps) => {
 	const { t: translate } = useTranslation(['common', 'consultingTypes']);
-	const settings = useAppConfig();
 	const tenantData = useTenant();
-	const {
-		agency: preselectedAgency,
-		consultant,
-		topic: preselectedTopic
-	} = useContext(UrlParamsContext);
+	const { agency: preselectedAgency, topic: preselectedTopic } =
+		useContext(UrlParamsContext);
 
 	const [selectedConsultingTypeOption, setSelectedConsultingTypeOption] =
 		useState<SelectOption>(null);
@@ -100,7 +95,7 @@ export const ConsultingTypeAgencySelection = ({
 				}))
 			)
 			.then(setTopicOptions);
-	}, [possibleTopicIds]);
+	}, [possibleTopicIds, preselectedAgency, preselectedTopic]);
 
 	useEffect(() => {
 		const consultingTypeOptions = possibleConsultingTypes.map(
@@ -155,14 +150,17 @@ export const ConsultingTypeAgencySelection = ({
 		onValidityChange(agency ? VALIDITY_VALID : VALIDITY_INVALID);
 	}, [agency]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const handleChange = useCallback((agency) => {
-		onChange({
-			...agency,
-			...(topicsAreRequired
-				? { topicIds: [parseInt(selectedTopicOption?.value)] }
-				: {})
-		});
-	}, []);
+	const handleChange = useCallback(
+		(agency) => {
+			onChange({
+				...agency,
+				...(topicsAreRequired
+					? { topicIds: [parseInt(selectedTopicOption?.value)] }
+					: {})
+			});
+		},
+		[onChange, selectedTopicOption?.value, topicsAreRequired]
+	);
 
 	const consultingTypeSelect: SelectDropdownItem = {
 		id: 'consultingTypeSelection',

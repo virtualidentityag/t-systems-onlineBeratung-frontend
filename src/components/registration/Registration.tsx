@@ -13,7 +13,6 @@ import useIsFirstVisit from '../../utils/useIsFirstVisit';
 import { useTranslation } from 'react-i18next';
 import { GlobalComponentContext } from '../../globalState/provider/GlobalComponentContext';
 import { UrlParamsContext } from '../../globalState/provider/UrlParamsProvider';
-import { useAppConfig } from '../../hooks/useAppConfig';
 
 interface RegistrationProps {
 	handleUnmatchConsultingType: Function;
@@ -35,7 +34,6 @@ export const Registration = ({
 	const agencyId = getUrlParameter('aid');
 	const consultantId = getUrlParameter('cid');
 	const postcodeParameter = getUrlParameter('postcode');
-	const settings = useAppConfig();
 
 	const { setInformal } = useContext(InformalContext);
 	const { Stage } = useContext(GlobalComponentContext);
@@ -70,7 +68,6 @@ export const Registration = ({
 			console.error(
 				'No `consultingType`, `consultant` or `agency` found in URL.'
 			);
-			window.location.href = settings.urls.landingpage;
 			return;
 		}
 
