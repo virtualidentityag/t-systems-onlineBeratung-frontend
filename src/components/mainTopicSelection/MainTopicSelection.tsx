@@ -9,7 +9,7 @@ import {
 	VALIDITY_INVALID
 } from '../registration/registrationHelpers';
 import { useTranslation } from 'react-i18next';
-import { TopicsDataInterface } from '../../globalState/interfaces';
+import { TopicsDataInterface } from '../../globalState/interfaces/TopicsDataInterface';
 import { UrlParamsContext } from '../../globalState/provider/UrlParamsProvider';
 
 export interface MainTopicSelectionProps {
