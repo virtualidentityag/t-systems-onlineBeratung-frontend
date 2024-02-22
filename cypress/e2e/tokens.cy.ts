@@ -1,5 +1,8 @@
 import { RENEW_BEFORE_EXPIRY_IN_MS } from '../../src/components/auth/auth';
-import { getTokenExpiryFromLocalStorage } from '../../src/components/sessionCookie/accessSessionLocalStorage';
+import {
+	getLocalStorageItem,
+	getTokenExpiryFromLocalStorage
+} from '../../src/components/sessionCookie/accessSessionLocalStorage';
 import {
 	closeWebSocketServer,
 	mockWebSocket,
@@ -24,8 +27,6 @@ describe('Keycloak Tokens', () => {
 	});
 
 	beforeEach(() => {
-		cy.mockApi();
-
 		cy.fixture('auth.token.json').then((fixture) => {
 			authTokenJson = fixture;
 		});
@@ -34,15 +35,18 @@ describe('Keycloak Tokens', () => {
 
 	it('should get and store tokens and expiry time on login', () => {
 		cy.login();
-		cy.wait('@askerSessions');
+
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		cy.get('#appRoot').then(() => {
 			cy.getCookie('keycloak').should('exist');
 			cy.getCookie('refreshToken').should('exist');
 
 			const tokenExpiry = getTokenExpiryFromLocalStorage();
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			expect(tokenExpiry.accessTokenValidUntilTime).to.exist;
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			expect(tokenExpiry.refreshTokenValidUntilTime).to.exist;
 		});
 	});
@@ -50,8 +54,8 @@ describe('Keycloak Tokens', () => {
 	it('should keep refreshing access token before it expires', () => {
 		cy.clock();
 		cy.login();
-		cy.wait('@askerSessions');
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		for (let check = 0; check < 3; check++) {
 			waitForTokenProcessing();
@@ -72,8 +76,8 @@ describe('Keycloak Tokens', () => {
 
 		cy.clock();
 		cy.login();
-		cy.wait('@askerSessions');
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		cy.clock().then((clock) => {
 			clock.restore();
@@ -92,11 +96,11 @@ describe('Keycloak Tokens', () => {
 		cy.get('#appRoot').should('exist');
 	});
 
-	it.skip('should logout if refresh token is already expired when loading the app', () => {
+	it('should logout if refresh token is already expired when loading the app', () => {
 		cy.clock();
 		cy.login();
-		cy.wait('@askerSessions');
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		cy.clock().then((clock) => {
 			clock.restore();
@@ -106,23 +110,30 @@ describe('Keycloak Tokens', () => {
 		cy.get('#appRoot');
 		waitForTokenProcessing();
 
-		cy.tick(1000); // logout() call uses setTimeout
+		cy.wait('@apiLogout');
+		cy.wait('@authLogout');
+		// Wait to get cookies processed and timeout is started
+		cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
+		cy.tick(2000); // logout() call uses setTimeout
 		cy.get('.loginForm').should('exist');
 	});
 
-	//TODO: inspect this test, as there seems to be a race condition
-	it.skip('should logout if refresh token is expired while the app is loaded', () => {
+	it('should logout if refresh token is expired while the app is loaded', () => {
 		cy.clock();
 		cy.login();
-		cy.wait('@askerSessions');
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		waitForTokenProcessing();
 
 		cy.tick(authTokenJson.refresh_expires_in * 1000 + 1);
 		waitForTokenProcessing();
 
-		cy.tick(1000); // logout() call uses setTimeout
+		cy.wait('@apiLogout');
+		cy.wait('@authLogout');
+		// Wait to get cookies processed and timeout is started
+		cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
+		cy.tick(2000); // logout() call uses setTimeout
 		cy.get('.loginForm').should('exist');
 	});
 
@@ -131,8 +142,8 @@ describe('Keycloak Tokens', () => {
 		cy.login({
 			auth: { expires_in: 1800, refresh_expires_in: 600 }
 		});
-		cy.wait('@askerSessions');
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		waitForTokenProcessing();
 		cy.tick(600 * 1000);
@@ -149,8 +160,8 @@ describe('Keycloak Tokens', () => {
 		cy.login({
 			auth: { expires_in: 1800, refresh_expires_in: refreshExpiresIn }
 		});
-		cy.wait('@askerSessions');
 		cy.wait('@usersData');
+		cy.wait('@askerSessions');
 
 		cy.clock().then((clock) => {
 			clock.restore();

@@ -1,4 +1,4 @@
-import { USER_CONSULTANT } from '../support/commands/login';
+import { USER_CONSULTANT } from '../support/commands/mockApi';
 import {
 	closeWebSocketServer,
 	mockWebSocket,
@@ -15,7 +15,6 @@ describe('release-note', () => {
 	});
 
 	beforeEach(() => {
-		cy.mockApi();
 		mockWebSocket();
 	});
 
@@ -45,7 +44,7 @@ describe('release-note', () => {
 		});
 
 		cy.fastLogin({
-			username: USER_CONSULTANT
+			userId: USER_CONSULTANT
 		});
 		cy.wait('@consultingTypeServiceBaseBasic');
 		cy.wait('@releases');
@@ -59,7 +58,7 @@ describe('release-note', () => {
 		cy.get('.releaseNote').should('not.exist');
 
 		cy.fastLogin({
-			username: USER_CONSULTANT
+			userId: USER_CONSULTANT
 		});
 
 		cy.get('.releaseNote').should('not.exist');
@@ -87,7 +86,7 @@ describe('release-note', () => {
 		});
 
 		cy.fastLogin({
-			username: USER_CONSULTANT
+			userId: USER_CONSULTANT
 		});
 		cy.wait('@consultingTypeServiceBaseBasic');
 		cy.wait('@releases');
@@ -100,7 +99,7 @@ describe('release-note', () => {
 		cy.get('.releaseNote').should('not.exist');
 
 		cy.fastLogin({
-			username: USER_CONSULTANT
+			userId: USER_CONSULTANT
 		});
 
 		cy.get('.releaseNote').should('exist');
@@ -108,7 +107,7 @@ describe('release-note', () => {
 
 	it('should not show the release note overlay if there is no file', () => {
 		cy.fastLogin({
-			username: USER_CONSULTANT
+			userId: USER_CONSULTANT
 		});
 		cy.wait('@consultingTypeServiceBaseBasic');
 
