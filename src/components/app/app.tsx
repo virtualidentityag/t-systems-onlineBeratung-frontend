@@ -1,6 +1,5 @@
 import '../../polyfill';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import { ComponentType, useState, lazy, Suspense, useContext } from 'react';
 import {
 	BrowserRouter as Router,
@@ -17,13 +16,13 @@ import ErrorBoundary from './ErrorBoundary';
 import { LanguagesProvider } from '../../globalState/provider/LanguagesProvider';
 import { TenantThemingLoader } from './TenantThemingLoader';
 import {
-	AppConfigInterface,
 	AppConfigProvider,
 	InformalProvider,
-	LegalLinkInterface,
 	LocaleProvider,
 	NotificationsContext,
-	TenantProvider
+	TenantProvider,
+	AppConfigInterface,
+	LegalLinkInterface
 } from '../../globalState';
 import { LegalLinksProvider } from '../../globalState/provider/LegalLinksProvider';
 import { useAppConfig } from '../../hooks/useAppConfig';
@@ -120,7 +119,6 @@ interface RouterWrapperProps {
 }
 
 const RouterWrapper = ({ extraRoutes, entryPoint }: RouterWrapperProps) => {
-	const history = useHistory();
 	const settings = useAppConfig();
 
 	const [startWebsocket, setStartWebsocket] = useState<boolean>(false);
@@ -171,22 +169,12 @@ const RouterWrapper = ({ extraRoutes, entryPoint }: RouterWrapperProps) => {
 									]}
 								>
 									<UrlParamsProvider>
-										<Registration
-											handleUnmatchConsultingType={() =>
-												history.push('/login')
-											}
-											handleUnmatchConsultant={() =>
-												history.push('/login')
-											}
-										/>
+										<Registration />
 									</UrlParamsProvider>
 								</Route>
 
 								<Route path="/:consultingTypeSlug/warteraum">
 									<WaitingRoomLoader
-										handleUnmatch={() =>
-											history.push('/login')
-										}
 										onAnonymousRegistration={() =>
 											setStartWebsocket(true)
 										}

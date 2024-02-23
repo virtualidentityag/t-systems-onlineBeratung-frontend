@@ -13,6 +13,7 @@ import {
 	TenantContext,
 	useLocaleData
 } from '../../globalState';
+import { TopicsDataInterface } from '../../globalState/interfaces/TopicsDataInterface';
 import { FormAccordion } from '../formAccordion/FormAccordion';
 import { ReactComponent as WelcomeIcon } from '../../resources/img/illustrations/welcome.svg';
 import './registrationForm.styles';
@@ -27,7 +28,6 @@ import { getTenantSettings } from '../../utils/tenantSettingsHelper';
 import { budibaseLogout } from '../budibase/budibaseLogout';
 import { getUrlParameter } from '../../utils/getUrlParameter';
 import { UrlParamsContext } from '../../globalState/provider/UrlParamsProvider';
-import { TopicsDataInterface } from '../../globalState/interfaces/TopicsDataInterface';
 import { ConsultingTypeRegistrationDefaults } from '../../containers/registration/components/ProposedAgencies/ProposedAgencies';
 import { apiPostError, ERROR_LEVEL_ERROR } from '../../api/apiPostError';
 
@@ -49,7 +49,7 @@ export const RegistrationForm = () => {
 	const { locale } = useLocaleData();
 	const settings = useAppConfig();
 	const postcode = getUrlParameter('postcode');
-	const { agency, consultingType, consultant, topic } =
+	const { agency, consultingType, consultant, topic, slugFallback } =
 		useContext(UrlParamsContext);
 
 	const [formAccordionData, setFormAccordionData] =
@@ -58,13 +58,18 @@ export const RegistrationForm = () => {
 				agency: agency || null,
 				consultingType: consultingType || null,
 				mainTopic: topic || null,
-				postcode: postcode || null
+				postcode: postcode
 			};
 
 			const { autoSelectPostcode } =
 				consultingType?.registration ||
 				ConsultingTypeRegistrationDefaults;
-			if (consultingType && agency && !postcode && autoSelectPostcode) {
+			if (
+				consultingType &&
+				agency &&
+				postcode === null &&
+				autoSelectPostcode
+			) {
 				initData.postcode = agency.postcode;
 			}
 
@@ -118,6 +123,10 @@ export const RegistrationForm = () => {
 		setIsUsernameAlreadyInUse(false);
 		setIsSubmitButtonDisabled(true);
 
+		const { autoSelectPostcode } =
+			formAccordionData.consultingType?.registration ||
+			ConsultingTypeRegistrationDefaults;
+
 		const registrationData = {
 			username: formAccordionData.username,
 			password: encodeURIComponent(formAccordionData.password),
@@ -129,7 +138,14 @@ export const RegistrationForm = () => {
 			preferredLanguage: locale,
 			...(formAccordionData.state && { state: formAccordionData.state }),
 			...(formAccordionData.age && { age: formAccordionData.age }),
-			...(consultant && { consultantId: consultant.consultantId })
+			...(consultant && { consultantId: consultant.consultantId }),
+			...(slugFallback && {
+				consultingType:
+					formAccordionData.agency.consultingTypeRel?.id?.toString(),
+				postcode: autoSelectPostcode
+					? formAccordionData.agency.postcode
+					: formAccordionData.postcode
+			})
 		};
 
 		const missingFields = [
