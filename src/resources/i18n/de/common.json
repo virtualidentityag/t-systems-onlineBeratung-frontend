@@ -1824,6 +1824,13 @@
 					"label": "Themenfeld"
 				}
 			},
+			"topic": {
+				"headline": "Bitte wählen Sie ein Themenfeld",
+				"infoText": "Ihr_e Berater_in ist in mehreren Themenfeldern tätig. Bitte wählen Sie Ihr gewünschtes Themenfeld.",
+				"select": {
+					"label": "Themenfeld"
+				}
+			},
 			"agency": {
 				"headline": "Bitte wählen Sie eine Beratungsstelle",
 				"infoText": "Ihr_e Berater_in ist in mehreren Beratungsstellen tätig. Bitte wählen Sie Ihre gewünschte Beratungsstelle."

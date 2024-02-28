@@ -196,7 +196,7 @@ export const Login = () => {
 		agencies: possibleAgencies,
 		consultingTypes: possibleConsultingTypes,
 		topicIds: possibleTopicIds
-	} = useConsultantRegistrationData();
+	} = useConsultantRegistrationData({});
 
 	const registerOverlay = useMemo(
 		(): OverlayItem => ({
