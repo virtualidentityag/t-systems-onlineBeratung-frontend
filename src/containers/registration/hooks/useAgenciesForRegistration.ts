@@ -1,16 +1,16 @@
 import unionBy from 'lodash/unionBy';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { apiAgencySelection } from '../../../api';
-import { DEFAULT_POSTCODE } from '../../../components/registration/prefillPostcode';
+import { TopicsDataInterface } from '../../../globalState/interfaces/TopicsDataInterface';
 import {
 	AgencyDataInterface,
 	ConsultingTypeInterface,
 	useTenant
 } from '../../../globalState';
-import { useConsultantAgenciesAndConsultingTypes } from './useConsultantAgenciesAndConsultingTypes';
+import { useConsultantRegistrationData } from './useConsultantRegistrationData';
 import { ConsultingTypeRegistrationDefaults } from '../components/ProposedAgencies/ProposedAgencies';
 import { UrlParamsContext } from '../../../globalState/provider/UrlParamsProvider';
-import { TopicsDataInterface } from '../../../globalState/interfaces/TopicsDataInterface';
+import { VALID_POSTCODE_LENGTH } from '../../../components/agencySelection/agencySelectionHelpers';
 
 interface AgenciesForRegistrationArgs {
 	consultingType: ConsultingTypeInterface;
@@ -29,29 +29,44 @@ export const useAgenciesForRegistration = ({
 	const tenantData = useTenant();
 
 	const {
+		consultant,
+		agency: preselectedAgency,
+		consultingType: preselectedConsultingType,
+		slugFallback
+	} = useContext(UrlParamsContext);
+
+	const {
 		agencies: consultantAgencies,
 		consultingTypes: consultantConsultingTypes
-	} = useConsultantAgenciesAndConsultingTypes();
+	} = useConsultantRegistrationData({
+		topicId: topic?.id,
+		consultingTypeId: consultingType?.id
+	});
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [agencies, setAgencies] = useState<AgencyDataInterface[]>([]);
-	const {
-		consultant,
-		agency,
-		consultingType: preselectedConsultingType
-	} = useContext(UrlParamsContext);
 
 	const { autoSelectPostcode, autoSelectAgency } =
 		consultingType?.registration || ConsultingTypeRegistrationDefaults;
 
+	const topicsEnabledAndUnSelected = useMemo(
+		() =>
+			tenantData?.settings?.featureTopicsEnabled &&
+			tenantData?.settings?.topicsInRegistrationEnabled &&
+			topic?.id === undefined,
+		[tenantData?.settings, topic?.id]
+	);
+
 	const allAgencies = useMemo(() => {
-		// As long as no consulting type is selected we can't show any agencies
-		if (!consultingType) {
+		// As long as no consulting type or topic is selected we can't show any agencies
+		if (!consultingType || topicsEnabledAndUnSelected) {
 			return [];
 		}
 
 		let uniqueAgencies = unionBy(
-			[agency, ...agencies, ...consultantAgencies].filter(Boolean),
+			[preselectedAgency, ...agencies, ...consultantAgencies].filter(
+				Boolean
+			),
 			'id'
 		);
 
@@ -61,22 +76,29 @@ export const useAgenciesForRegistration = ({
 				(agency) => !agency.external
 			);
 		}
-		if (consultingType) {
-			uniqueAgencies = uniqueAgencies.filter(
-				(agency) => agency.consultingType === consultingType.id
+
+		uniqueAgencies = uniqueAgencies
+			// Filter by consultingType
+			.filter(
+				(agency) =>
+					slugFallback ||
+					!consultingType ||
+					agency.consultingType === consultingType.id
 			);
-		}
+
 		if (autoSelectAgency && uniqueAgencies.length > 0) {
 			uniqueAgencies = [uniqueAgencies[0]];
 		}
 		return uniqueAgencies;
 	}, [
-		agency,
+		preselectedAgency,
+		topicsEnabledAndUnSelected,
 		agencies,
 		consultantAgencies,
 		consultingType,
 		autoSelectPostcode,
-		autoSelectAgency
+		autoSelectAgency,
+		slugFallback
 	]);
 
 	const allConsultingTypes = useMemo(
@@ -97,10 +119,9 @@ export const useAgenciesForRegistration = ({
 		// if we already have information from consulting types we can ignore the request
 		if (
 			consultant ||
-			agency ||
-			(tenantData?.settings?.featureTopicsEnabled &&
-				tenantData?.settings?.topicsInRegistrationEnabled &&
-				topic?.id === undefined)
+			preselectedAgency ||
+			topicsEnabledAndUnSelected ||
+			(!autoSelectPostcode && postcode?.length !== VALID_POSTCODE_LENGTH)
 		) {
 			setIsLoading(false);
 			return;
@@ -109,9 +130,10 @@ export const useAgenciesForRegistration = ({
 		setIsLoading(true);
 		apiAgencySelection(
 			{
-				postcode: autoSelectPostcode ? DEFAULT_POSTCODE : postcode,
+				...(autoSelectPostcode ? {} : { postcode }),
 				consultingType: consultingType?.id,
-				topicId: topic?.id
+				topicId: topic?.id,
+				fetchConsultingTypeDetails: true
 			},
 			abortController.signal
 		)
@@ -129,13 +151,13 @@ export const useAgenciesForRegistration = ({
 			abortController?.abort();
 		};
 	}, [
-		agency,
+		preselectedAgency,
 		autoSelectPostcode,
 		consultant,
 		consultingType?.id,
 		topic?.id,
 		postcode,
-		tenantData?.settings
+		topicsEnabledAndUnSelected
 	]);
 
 	return {
