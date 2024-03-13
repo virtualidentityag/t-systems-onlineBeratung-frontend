@@ -637,6 +637,10 @@
 				"headline": "Bitte wähle ein Themenfeld",
 				"infoText": "Dein_e Berater_in ist in mehreren Themenfeldern tätig. Bitte wähle Dein gewünschtes Themenfeld."
 			},
+			"topic": {
+				"headline": "Bitte wähle ein Themenfeld",
+				"infoText": "Dein_e Berater_in ist in mehreren Themenfeldern tätig. Bitte wähle Dein gewünschtes Themenfeld."
+			},
 			"agency": {
 				"headline": "Bitte wähle eine Beratungsstelle",
 				"infoText": "Dein_e Berater_in ist in mehreren Beratungsstellen tätig. Bitte wähle Deine gewünschte Beratungsstelle."

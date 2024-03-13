@@ -1,12 +1,12 @@
 import { v4 as uuid } from 'uuid';
 import { config } from '../../src/resources/scripts/config';
-import { USER_CONSULTANT, USER_VIDEO } from '../support/commands/login';
+import { USER_CONSULTANT, USER_VIDEO } from '../support/commands/mockApi';
 import {
 	closeWebSocketServer,
 	mockWebSocket,
 	startWebSocketServer
 } from '../support/websocket';
-import { AppointmentsDataInterface } from '../../src/globalState/interfaces/AppointmentsDataInterface';
+import { AppointmentsDataInterface } from '../../src/globalState/interfaces';
 
 class FakeJitsiMeetExternalAPI {
 	private _handler: {
@@ -43,7 +43,6 @@ describe('videoconference', () => {
 	});
 
 	beforeEach(() => {
-		cy.mockApi();
 		mockWebSocket();
 
 		const today = new Date();
@@ -164,7 +163,7 @@ describe('videoconference', () => {
 	describe('Consultant', () => {
 		beforeEach(() => {
 			cy.fastLogin({
-				username: USER_CONSULTANT
+				userId: USER_CONSULTANT
 			});
 		});
 
@@ -270,7 +269,7 @@ describe('videoconference', () => {
 	describe('Video Consultant', () => {
 		beforeEach(() => {
 			cy.fastLogin({
-				username: USER_VIDEO
+				userId: USER_VIDEO
 			});
 		});
 
