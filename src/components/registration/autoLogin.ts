@@ -29,7 +29,7 @@ import { getBudibaseAccessToken } from '../sessionCookie/getBudibaseAccessToken'
 import {
 	TenantDataInterface,
 	TenantDataSettingsInterface
-} from '../../globalState/interfaces';
+} from '../../globalState/interfaces/TenantDataInterface';
 import { appConfig } from '../../utils/appConfig';
 import { parseJwt } from '../../utils/parseJWT';
 import { removeRocketChatMasterKeyFromLocalStorage } from '../sessionCookie/accessSessionLocalStorage';
