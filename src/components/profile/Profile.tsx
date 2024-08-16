@@ -90,11 +90,13 @@ export const Profile = () => {
 	useEffect(() => {
 		// First agency can be set as only one session per asker is possible
 		// isSubsequentRegistrationAllowed false on consultingType
-		const specAgency = Object.values(userData.consultingTypes).filter(
-			(resort: any) =>
-				resort.isRegistered && resort.agency ? resort : null
-		);
-		setSpecificAgency(specAgency[0].agency);
+		if (!hasUserAuthority(AUTHORITIES.CONSULTANT_DEFAULT, userData)) {
+			const specAgency = Object.values(userData.consultingTypes)?.filter(
+				(resort: any) =>
+					resort.isRegistered && resort.agency ? resort : null
+			);
+			setSpecificAgency(specAgency[0].agency);
+		}
 	}, [setSpecificAgency, userData]);
 
 	useEffect(() => {
