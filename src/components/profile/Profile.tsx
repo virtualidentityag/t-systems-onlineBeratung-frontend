@@ -81,7 +81,13 @@ export const Profile = () => {
 			.querySelector('.navigation__wrapper')
 			?.classList.remove('navigation__wrapper--mobileHidden');
 		document.querySelector('.header')?.classList.remove('header--mobile');
+	}, []);
 
+	useEffect(() => {
+		scrollContainer.current.scrollTo(0, 0);
+	}, [location]);
+
+	useEffect(() => {
 		// First agency can be set as only one session per asker is possible
 		// isSubsequentRegistrationAllowed false on consultingType
 		const specAgency = Object.values(userData.consultingTypes).filter(
@@ -89,11 +95,7 @@ export const Profile = () => {
 				resort.isRegistered && resort.agency ? resort : null
 		);
 		setSpecificAgency(specAgency[0].agency);
-	}, []);
-
-	useEffect(() => {
-		scrollContainer.current.scrollTo(0, 0);
-	}, [location]);
+	}, [setSpecificAgency, userData]);
 
 	useEffect(() => {
 		setMobileMenu(
