@@ -61,7 +61,9 @@ export const Profile = () => {
 
 	const legalLinks = useContext(LegalLinksContext);
 	const { userData } = useContext(UserDataContext);
-	const { specificAgency } = useContext(AgencySpecificContext);
+	const { specificAgency, setSpecificAgency } = useContext(
+		AgencySpecificContext
+	);
 	const { consultingTypes } = useContext(ConsultingTypesContext);
 
 	const [mobileMenu, setMobileMenu] = useState<
@@ -84,6 +86,18 @@ export const Profile = () => {
 	useEffect(() => {
 		scrollContainer.current.scrollTo(0, 0);
 	}, [location]);
+
+	useEffect(() => {
+		// First agency can be set as only one session per asker is possible
+		// isSubsequentRegistrationAllowed false on consultingType
+		if (!hasUserAuthority(AUTHORITIES.CONSULTANT_DEFAULT, userData)) {
+			const specAgency = Object.values(userData.consultingTypes)?.filter(
+				(resort: any) =>
+					resort.isRegistered && resort.agency ? resort : null
+			);
+			setSpecificAgency(specAgency[0].agency);
+		}
+	}, [setSpecificAgency, userData]);
 
 	useEffect(() => {
 		setMobileMenu(
