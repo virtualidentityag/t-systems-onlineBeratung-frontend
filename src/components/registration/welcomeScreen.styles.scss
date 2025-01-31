@@ -2,6 +2,7 @@ $welcome-screen-button-text-align: center !default;
 
 .registrationWelcome {
 	margin: 0;
+
 	h2 {
 		margin-bottom: $grid-base-two;
 	}
@@ -64,14 +65,5 @@ $welcome-screen-button-text-align: center !default;
 		&:focus:not(:focus-visible) {
 			outline: none;
 		}
-	}
-	&__consultingType {
-		font-size: $font-size-secondary;
-		font-weight: $font-weight-medium;
-		line-height: 14px;
-		letter-spacing: 1.5px;
-		text-transform: uppercase;
-		padding-bottom: $grid-base;
-		color: $text-low-emphasis;
 	}
 }
