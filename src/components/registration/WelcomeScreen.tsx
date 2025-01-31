@@ -15,7 +15,6 @@ interface WelcomeScreenProps {
 	welcomeScreenConfig?: RegistrationWelcomeScreenInterface;
 	loginParams?: string;
 	consultingTypeId: number;
-	consultingTypeName: string;
 }
 
 export const WelcomeScreen = ({
@@ -23,8 +22,7 @@ export const WelcomeScreen = ({
 	handleForwardToRegistration,
 	welcomeScreenConfig,
 	loginParams,
-	consultingTypeId,
-	consultingTypeName
+	consultingTypeId
 }: WelcomeScreenProps) => {
 	const { t: translate } = useTranslation();
 	const history = useHistory();
@@ -42,11 +40,6 @@ export const WelcomeScreen = ({
 
 	return (
 		<div className="registrationWelcome">
-			{consultingTypeName && (
-				<div className="registrationWelcome__consultingType">
-					{consultingTypeName}{' '}
-				</div>
-			)}
 			<Headline text={title} semanticLevel="2" />
 			<h4>{translate('registration.welcomeScreen.subline')}</h4>
 			<ServiceExplanation
