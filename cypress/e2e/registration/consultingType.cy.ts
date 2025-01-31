@@ -37,17 +37,11 @@ describe('Registration', () => {
 					consultingTypes = generateConsultingTypes(consultingType, [
 						{
 							id: 1,
-							slug: 'consultingType1',
-							titles: {
-								welcome: 'Test Title Consulting Type 1'
-							}
+							slug: 'consultingType1'
 						},
 						{
 							id: 2,
-							slug: 'consultingType2',
-							titles: {
-								welcome: 'Test Title Consulting Type 2'
-							}
+							slug: 'consultingType2'
 						},
 						{
 							id: 3,
@@ -116,20 +110,6 @@ describe('Registration', () => {
 				cy.visit('/consultingType1/registration');
 				cy.wait('@consultingTypeServiceBySlugFull');
 				cy.get('.stage').should('have.class', 'stage--ready');
-			});
-
-			it('should have consulting type loaded with title', () => {
-				cy.window()
-					.its('i18n')
-					.then((i18n) => {
-						i18n.changeLanguage('cimode');
-					});
-				cy.willReturn('consultingTypes').then((consultingTypes) => {
-					cy.get('.registrationWelcome .headline').should(
-						'have.text',
-						consultingTypes[0].titles.welcome
-					);
-				});
 			});
 
 			it('should have registration steps', () => {
